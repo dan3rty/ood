@@ -1,0 +1,114 @@
+---
+title: Designer
+---
+classDiagram
+    class IShapeFactory {
+        <<interface>>
+        +CreateShape(const std::string& description)* CShapePtr
+        ~IShapeFactory()*
+    }
+    class CShapeFactory {
+        +CreateShape(const std::string& descrciption) CShapePtr
+        -GetShapeCreator(const std::string& shapeType) ShapeCreator
+        -ParseColor(std::istream& stream) Color
+        -CreateEllipse(std::istream& args) CShapePtr
+        -CreateRectangle(std::istream& args) CShapePtr
+        -CreateRegularPolygon(std::istream& args) CShapePtr
+        -CreateTriangle(std::istream& args) CShapePtr
+    }
+    class IDesigner {
+        <<interface>>
+        +CreateDraft(std::istream& stream, std::ostream& errorStream)* CPictureDraft
+        +~IDesigner()*
+    }
+    class CDesigner {
+        +CDesigner(IShapeFactory& shapeFactory)
+        +CreateDraft(std::istream& stream, std::ostream& errorStream)* CPictureDraft
+        -m_shapeFactory : IShapeFactory&
+    }
+    class CPainter {
+        +DrawPicture(CPictureDraft const& draft, CCanvas& canvas) void
+    }
+    class CShape {
+        +CShape(Color color)
+        +GetColor() Color
+        +Draw(CCanvas& canvas)* void
+        ~CShape()*
+        -m_color : Color
+    }
+    class CCanvas {
+        +CCanvas(std::ostream& output)
+        +~CCanvas()
+        +SetColor(Color color) void
+        +DrawLine(const Point& from, const Point& to) void
+        +DrawEllipse(const Point& center, double horizontalRadius, double verticalRadius) void
+        -m_output : std::ostream&
+        -m_currentColor : std::string
+    }
+    class CEllipse {
+        +CEllipse(Color color, Point const& center, double horizontalRadius, double verticalRadius)
+        +GetCenter() Point
+        +GetHorizontalRadius() double
+        +GetVerticalRadius() double
+        +Draw(CCanvas& canvas) void
+        -m_center : Point
+        -m_horizontalRadius : double
+        -m_verticalRadius : double
+    }
+    class CRectangle {
+        +CRectangle(Color color, Point const& leftTopCorner, Point const& rightBottomCorner)
+        +CRectangle(Color, Point const& leftTopCorner, double width, double height)
+        +GetLeftTop() Point
+        +GetRightBottom() Point
+        +Draw(CCanvas& canvas) void
+        -m_leftTopCorner : Point
+        -m_rightBottomCorner : Point
+    }
+    class CRegularPolygon {
+        +CRegularPolygon(Color color, std::size_t vertexCount, Point const& center, double radius)
+        +GetVertexCount size_t
+        +GetCenter() Point
+        +GetRadius() double
+        +Draw(CCanvas& canvas) void
+        -CalculateVertices() std::vector~Point~
+        -m_vertexCount : size_t
+        -m_center : Point
+        -m_radius : double
+    }
+    class CTriangle {
+        +CTriangle(Color color, Point const& vertex1, Point const& vertex2, Point const& vertex3)
+        +GetVertex1() Point
+        +GetVertex2() Point
+        +GetVertex3() Point
+        +Draw(CCanvas& canvas) void
+        -m_vertex1 : Point
+        -m_vertex2 : Point
+        -m_vertex3 : Point
+    }
+    class CPictureDraft {
+        +AddShape(CShapePtr&& shape) void
+        +IsEmpty() bool
+        +begin() const_iterator
+        +end() const_iterator
+        -m_shapes : std::vector~CShapePtr~
+    }
+    IShapeFactory ..> CShape
+    CShapeFactory ..|> IShapeFactory
+    CShapeFactory ..> CEllipse
+    CShapeFactory ..> CRectangle
+    CShapeFactory ..> CRegularPolygon
+    CShapeFactory ..> CTriangle
+    CShape <|.. CEllipse
+    CShape <|.. CRectangle
+    CShape <|.. CRegularPolygon
+    CShape <|.. CTriangle
+    IDesigner ..> CPictureDraft
+    CDesigner ..|> IDesigner
+    CDesigner o-- IShapeFactory
+    CPainter ..> CDesigner
+    CPainter ..> CCanvas
+    CShape ..> CCanvas
+    CRectangle ..> CCanvas
+    CRegularPolygon ..> CCanvas
+    CEllipse ..> CCanvas
+    CTriangle ..> CCanvas

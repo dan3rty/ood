@@ -1,0 +1,172 @@
+---
+title: Editor
+---
+classDiagram
+    class CEditor {
+        +CEditor(std:: istream& input, std:: ostream& output, IHistory& history, ISaver& saver)
+        +Start() void
+        -GetCommandHandler(const std:: string& commandName) CommandHandler
+        -InsertParagraph(std:: istream& input) void
+        -InsertImage(std:: istream& input) void
+        -SetTitle(std:: istream& input) void
+        -List() void
+        -ReplaceText(std:: istream& input) void
+        -ResizeImage(std:: istream& input) void
+        -DeleteItem(std:: istream& input) void
+        -Help() void
+        -Undo() void
+        -Redo() void
+        -Save(std:: istream& input) void
+        -Exit() void
+        -GetOptionalIndex(std:: string const& value) std:: optional~std::size_t~
+        -m_input: std:: istream&
+        -m_output: std:: ostream&
+        -m_running: bool
+        -m_document: CDocument
+    }
+    class IDocument {
+        <<interface>>
+        +InsertParagraph(std:: string const& text, std:: optional~std::size_t~ position)* void
+        +InsertImage(std:: string const& path, int width, int height, std:: optional~std::size_t~ position)*
+        +GetItemsCount()* std:: size_t
+        +GetItem(std:: size_t index)* CConstDocumentItem
+        +DeleteItem(std:: size_t index)* void
+        +GetTitle()* std:: string
+        +SetTitle(std:: string const& title)* void
+        +CanUndo()* bool
+        +Undo()* void
+        +CanRedo()* bool
+        +Redo()* void
+        +Save(std:: string const& path)* void
+        +~ IDocument()*
+    }
+    class CDocument {
+        +CDocument(IHistory& history, ISaver& saver)
+        +InsertParagraph(std:: string const& text, std:: optional~std::size_t~ position) void
+        +InsertImage(std:: string const& path, int width, int height, std:: optional~std::size_t~ position) void
+        +GetItemsCount() std:: size_t
+        +GetItem(std:: size_t index) CConstDocumentItem
+        +DeleteItem(std:: size_t index) void
+        +GetTitle() std:: string
+        +SetTitle(std:: string const& title) void
+        +CanUndo() bool
+        +Undo() void
+        +CanRedo() bool
+        +Redo() void
+        +Save(std:: string const& path) void
+        -m_history: IHistory&
+        -m_saver: ISaver&
+        -m_items: std:: vector~CDocumentItem~
+        -m_title: std:: string
+    }
+    class ICommandExecutor {
+        <<interface>>
+        +AddAndExecuteCommand(ICommandPtr&& command)* void
+        +~ICommandExecutor()*
+    }
+    class IHistory {
+        <<interface>>
+        +CanUndo()* bool
+        +Undo()* void
+        +CanRedo()* bool
+        +Redo()* void
+    }
+    class CHistory {
+        +CanUndo() bool
+        +Undo() void
+        +CanRedo() bool
+        +Redo() void
+        +AddAndExecuteCommand(ICommandPtr&& command) void
+        -m_commands : std::vector~ICommandPtr~
+        -m_currentCommandIndex : std::size_t
+    }
+    class ISaver {
+        <<interface>>
+        +Save(IDocument const& document, std::string const& path)* void
+        +~ISaver()*
+    }
+    class CHtmlSaver {
+        +Save(IDocument const& document, std::string const& path) void
+        -CreateImagesDirectory(std::string const& documentPath) std::string
+        -GetImagesDirectoryPath(std::string const& documentPath) std::string
+        -WriteHeader(std::ostream& output, IDocument const& document) void
+        -WriteImage(std::ostream& output, std::shared_ptr<IImage const> const& image, std::string const& imagesDirectoryPath) void
+        -WriteParagraph(std::ostream& output, std::shared_ptr<IParagraph const> const& paragraph) void
+        -WriteFooter(std::ofstream& output) void
+        -Escape(std::string const& result) std::string
+    }
+    class IParagraph {
+        <<interface>>
+        +GetText()* std::string
+        +SetText(std::string const& text)* void
+        +~IParagraph()*
+    }
+    class CParagraph {
+        +CParagraph(std::string text, ICommandExecutor& commandExecutor)
+        +GetText() std::string
+        +SetText(std::string const& text) void
+        -m_text : std::string
+        -m_commandExecutor : ICommandExecutor&
+    }
+    class IImage {
+        <<interface>>
+        +GetPath()* std::string
+        +GetWidth()* int
+        +GetHeight()* int
+        +Resize(int width, int height)* void
+        +~IImage()*
+    }
+    class CImage {
+        +CImage(std::string const& path, int width, int height, ICommandExecutor& commandExecutor)
+        +~CImage()
+        +GetPath() std::string
+        +GetWidth() int
+        +GetHeight() int
+        +Resize(int width, int height) void
+        -ValidateDimensions(int width, int height) void
+        -ValidateImageFormat(std::string const& path) void
+        -ValidateFileExists(std::string const& path) void
+        -GetNextFilename() std::string
+        -m_nextImageId : std::size_t
+        -m_path : std::string
+        -m_width : int
+        -m_height : int
+        -m_commandExecutor : ICommandExecutor&
+    }
+    class CConstDocumentItem {
+        +CConstDocumentItem(std::shared_ptr~IImage~&& image)
+        +CConstDocumentItem(std::shared_ptr~IParagraph~&& paragraph)
+        +GetImage() std::shared_ptr~IImage const~
+        +GetParagraph() std::shared_ptr~IParagraph const~
+        +~CConstDocumentItem()*
+        #m_image : std::shared_ptr~IImage~
+        #m_paragraph : std::shared_ptr~IParagraph~
+    }
+    class CConstDocumentItem {
+        +CDocumentItem(std::shared_ptr~IImage~&& image)
+        +CDocumentItem(std::shared_ptr~IParagraph~&& paragraph)
+        +GetImage() std::shared_ptr~IImage~
+        +GetParagraph() std::shared_ptr~IParagraph~
+    }
+    class ICommand {
+        <<interface>>
+        +Execute()* void
+        +Rollback()* void
+        +~ICommand()*
+    }
+    class CAbstractCommand {
+        +Execute() void
+        +Rollback() void
+        #DoExecute()* void
+        #DoRollback()* void
+        -m_isExecuted : bool
+    }
+    CEditor --> ISaver
+    CEditor --> IHistory
+    CDocument --o CEditor
+    ISaver --o CDocument
+    IHistory --o CDocument
+    IDocument <|.. CDocument
+    ICommandExecutor <|-- IHistory
+    IParagraph <|.. CParagraph
+    IImage <|.. CImage

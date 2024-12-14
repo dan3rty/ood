@@ -1,0 +1,71 @@
+---
+title: WeatherStation
+---
+classDiagram
+    class CCurrentConditionsDisplay{
+        +Update(WeatherInfo& data) void
+    }
+    class Stats{
+        +double max
+        +double min
+        +double average
+    }
+    class CStatsMonitor{
+        +Update(double value) void
+        +GetStats() const Stats
+        -double m_max
+        -double m_min
+        -double m_accumulated
+        -unsigned m_accumulatedCount
+    }
+    class CStatsDisplay{
+        -Update(WeatherInfo const& data) void
+        -PrintStats(std::string const& header, Stats const& stats)$ void
+        -CStatsMonitor m_temperatureMonitor;
+        -CStatsMonitor m_humidityMonitor;
+        -CStatsMonitor m_pressureMonitor;
+    }
+    class CObservable~T~{
+        +RegisterObserver(IObserver~T~& observer, unsigned priority) void
+        +NotifyObservers() void
+        +RemoveObserver(IObserver~T~& observer) void
+        #GetChangedData() T
+        -std::multimap~unsigned, IObserver~T~ ~ m_observers
+    }
+    class IObservable~T~{
+        +RegisterObserver(IObserver~T~& observer, unsigned priority)* void
+        +NotifyObservers()*
+        +RemoveObserver(IObserver~T~& observer)*
+        +~IObservable()*
+    }
+    class IObserver~T~{
+        +Update(T const& data)* void
+        +~IObserver()*
+    }
+    <<interface>> IObservable
+    <<interface>> IObserver
+    class WeatherInfo{
+        +double temperature
+        +double humidity
+        +double pressure
+    }
+    class CWeatherData{
+        +GetTemperature() double
+        +GetHumidity() double
+        +GetPressure() double
+        +MeasurementsChanged() void
+        +SetMeasurements(double temperature, double humidity, double pressure) void
+        #GetChangedData() WeatherInfo
+        -double m_temperature
+        -double m_humidity
+        -double m_pressure
+    }
+    CWeatherData ..> WeatherInfo
+    CStatsMonitor ..> Stats
+    CStatsMonitor ..* CStatsDisplay
+    IObservable ..> IObserver
+    CCurrentConditionsDisplay ..|> IObserver
+    CStatsDisplay ..|> IObserver
+    CObservable ..|> IObservable
+    CWeatherData ..|> CObservable
+    IObserver ..* CObservable

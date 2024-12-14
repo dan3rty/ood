@@ -1,0 +1,5 @@
+add_subdirectory(WeatherStation)
+add_subdirectory(WeatherStationDuo)
+add_subdirectory(WeatherStationPro)
+add_subdirectory(WeatherStationProDuo)
+add_subdirectory(WeatherStationProLite)

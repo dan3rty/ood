@@ -1,0 +1,37 @@
+add_executable(Slides
+               main.cpp
+               Common/App/ICanvas.h
+               Common/Infrastructure/SVG/CCanvas.cpp
+               Common/Infrastructure/SVG/CCanvas.h
+               Shapes/ShapeTypes.h
+               Common/App/IDrawable.h
+               Shapes/IShape.h
+               Shapes/Shape/CShape.cpp
+               Shapes/Shape/CShape.h
+               Shapes/Rectangle/CRectangle.cpp
+               Shapes/Rectangle/CRectangle.h
+               Shapes/Ellipse/CEllipse.cpp
+               Shapes/Ellipse/CEllipse.h
+               Shapes/Triangle/CTriangle.cpp
+               Shapes/Triangle/CTriangle.h
+               Styles/IStyle.h
+               Styles/IOutlineStyle.h
+               Shapes/Styles/CStyleImpl.h
+               Shapes/Styles/FillStyle/CFillStyle.h
+               Shapes/Styles/OutlineStyle/COutlineStyle.cpp
+               Shapes/Styles/OutlineStyle/COutlineStyle.h
+               ShapeGroup/Styles/CGroupStyleImpl.h
+               ShapeGroup/Styles/GroupFillStyle/CGroupFillStyle.h
+               ShapeGroup/Styles/GroupOutlineStyle/CGroupOutlineStyle.cpp
+               ShapeGroup/Styles/GroupOutlineStyle/CGroupOutlineStyle.h
+               ShapeGroup/IShapeGroup.h
+               ShapeGroup/CShapeGroup.cpp
+               ShapeGroup/CShapeGroup.h
+               Slide/ISlide.h
+               ShapeCollection/IShapeCollection.h
+               Slide/Slide/CSlide.cpp
+               Slide/Slide/CSlide.h
+               ShapeCollection/CShapeCollection.h
+               ShapeCollection/CShapeCollectionImpl.h)
+
+add_subdirectory(tests)

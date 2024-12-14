@@ -1,0 +1,12 @@
+add_executable(TiledImage
+        CoW.h
+        Drawer.h
+        Drawer.cpp
+        Geom.h
+        Image.h
+        Image.cpp
+        Tile.h
+        ImageService.h
+        ImageService.cpp
+        main.cpp)
+add_subdirectory(tests)

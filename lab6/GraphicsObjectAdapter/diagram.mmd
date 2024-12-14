@@ -1,0 +1,199 @@
+#pragma once
+
+#include "../../Libs/graphics_lib/ICanvas.h"
+#include "../../Libs/modern_graphics_lib/ModernGraphicsRenderer/CModernGraphicsRenderer.h"
+
+namespace app
+{
+
+class CModernGraphicsRendererCanvasAdapter final : public graphics_lib::ICanvas
+{
+public:
+explicit CModernGraphicsRendererCanvasAdapter(modern_graphics_lib::CModernGraphicsRenderer& renderer);
+
+void MoveTo(int x, int y) override;
+void LineTo(int x, int y) override;
+
+private:
+modern_graphics_lib::CModernGraphicsRenderer& m_renderer;
+modern_graphics_lib::CPoint m_start;
+};
+
+} // namespace app
+
+#pragma once
+
+#include "../Libs/shape_drawing_lib/CanvasPainter/CCanvasPainter.h"
+
+namespace app
+{
+
+void PaintPicture(const shape_drawing_lib::CCanvasPainter& painter);
+void PaintPictureOnCanvas();
+
+void PaintPictureOnModernGraphicsRenderer();
+
+}
+
+#pragma once
+
+#include "../ICanvas.h"
+
+namespace graphics_lib
+{
+
+class CCanvas final : public ICanvas
+{
+public:
+void MoveTo(int x, int y) override;
+void LineTo(int x, int y) override;
+};
+
+} // namespace graphics_lib
+
+#pragma once
+
+namespace graphics_lib
+{
+
+class ICanvas
+{
+public:
+virtual void MoveTo(int x, int y) = 0;
+virtual void LineTo(int x, int y) = 0;
+
+virtual ~ICanvas() = default;
+};
+
+} // namespace graphics_lib
+
+#pragma once
+
+#include "../Point/CPoint.h"
+#include <iostream>
+
+namespace modern_graphics_lib
+{
+
+class CModernGraphicsRenderer
+{
+public:
+explicit CModernGraphicsRenderer(std::ostream& output);
+
+~CModernGraphicsRenderer();
+
+void BeginDraw();
+void DrawLine(CPoint const& start, CPoint const& end) const;
+void EndDraw();
+
+private:
+std::ostream& m_output;
+bool m_drawing = false;
+};
+
+} // namespace modern_graphics_lib
+
+#pragma once
+
+namespace modern_graphics_lib
+{
+
+class CPoint
+{
+public:
+CPoint() = default;
+CPoint(int x, int y);
+
+int x = 0;
+int y = 0;
+};
+
+} // namespace modern_graphics_lib
+
+#pragma once
+
+#include "../../graphics_lib/ICanvas.h"
+#include "ICanvasDrawable.h"
+
+namespace shape_drawing_lib
+{
+
+class CCanvasPainter
+{
+public:
+explicit CCanvasPainter(graphics_lib::ICanvas& canvas);
+
+void Draw(ICanvasDrawable const& drawable) const;
+
+private:
+graphics_lib::ICanvas& m_canvas;
+};
+
+} // namespace shape_drawing_lib
+
+#pragma once
+
+#include "../../graphics_lib/ICanvas.h"
+
+namespace shape_drawing_lib
+{
+
+struct Point
+{
+int x = 0;
+int y = 0;
+};
+
+class ICanvasDrawable
+{
+public:
+virtual void Draw(graphics_lib::ICanvas& canvas) const = 0;
+
+virtual ~ICanvasDrawable() = default;
+};
+
+} // namespace shape_drawing_lib
+
+#pragma once
+
+#include "../CanvasPainter/ICanvasDrawable.h"
+
+namespace shape_drawing_lib
+{
+
+class CRectangle final : public ICanvasDrawable
+{
+public:
+CRectangle(Point const& leftTop, int width, int height);
+
+void Draw(graphics_lib::ICanvas& canvas) const override;
+
+private:
+Point m_leftTop;
+int m_width;
+int m_height;
+};
+
+} // namespace shape_drawing_lib
+
+#pragma once
+
+#include "../CanvasPainter/ICanvasDrawable.h"
+
+namespace shape_drawing_lib
+{
+
+class CTriangle final : public ICanvasDrawable
+{
+public:
+CTriangle(Point const& p1, Point const& p2, Point const& p3);
+
+void Draw(graphics_lib::ICanvas& canvas) const override;
+
+private:
+Point m_p1;
+Point m_p2;
+Point m_p3;
+};
+
+} // namespace shape_drawing_lib

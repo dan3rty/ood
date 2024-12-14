@@ -1,0 +1,133 @@
+classDiagram
+    class ICanvas {
+        <<interface>>
+        +void DrawLine(PointD start, PointD end, optional~RgbaColor~ color, optional~double~ thickness)
+        +void DrawPolygon(vector~PointD~ const& points, optional~RgbaColor~ outlineColor, optional~RgbaColor~ fillColor, optional~double~ outlineThickness)
+        +void DrawEllipse(PointD const& center, double horizontalRadius, double verticalRadius, optional~RgbaColor~ outlineColor, optional~RgbaColor~ fillColor, optional~double~ outlineThickness)
+    }
+
+    class IDrawable {
+        <<interface>>
+        +void Draw(ICanvas& canvas) const
+    }
+
+    IDrawable ..> ICanvas
+
+    class CCanvas {
+        +CCanvas(ostream& output, double width, double height)
+        +~ CCanvas()
+        +void DrawLine(PointD start, PointD end, optional~RgbaColor~ color, optional~double~ thickness)
+        +void DrawPolygon(vector~PointD~ const& points, optional~RgbaColor~ outlineColor, optional~RgbaColor~ fillColor, optional~double~ outlineThickness)
+        +void DrawEllipse(PointD const& center, double horizontalRadius, double verticalRadius, optional~RgbaColor~ outlineColor, optional~RgbaColor~ fillColor, optional~double~ outlineThickness)
+        -m_output: std:: ostream&
+    }
+    ICanvas <|.. CCanvas
+
+    class IShapeCollection {
+        <<interface>>
+        +size_t GetShapesCount() const
+        +shared_ptr~IShape~ GetShapeAtIndex(size_t index)
+        +void InsertShape(shared_ptr~IShape~ const& shape, size_t index)
+        +void RemoveShapeAtIndex(size_t index)
+    }
+    IShapeCollection ..> IShape
+
+    class CShapeCollectionImpl {
+        +size_t GetShapesCount() const
+        +shared_ptr~IShape~ GetShapeAtIndex(size_t index)
+        +void InsertShape(shared_ptr~IShape~ const& shape, size_t index)
+        +void RemoveShapeAtIndex(size_t index)
+    }
+    IShapeCollection <|.. CShapeCollectionImpl
+
+    class CGroupOutlineStyle {
+        +std:: optional~double~ GetThickness()
+        +void SetThickness(double thickness)
+    }
+
+    CGroupOutlineStyle --|> CGroupStyleImpl
+
+    class CGroupStyleImpl~Base, Enumerator~ {
++CGroupStyleImpl(Enumerator&& enumerator)
++std::optional~bool~ IsEnabled()
++void Enable()
++void Disable()
++std::optional~RgbaColor~ GetColor()
++void SetColor()
+#m_enumerator : Enumerator
+}
+
+class IShapeGroup {
+<<interface>>
+}
+
+class CShapeGroup {
++std:: optional~RectD~ GetFrame()
++void SetFrame()
++std:: shared_ptr~IOutlineStyle~ GetOutlineStyle()
++std:: shared_ptr~IStyle~ GetStyle()
++std:: shared_ptr~IShapeGroup~ GetGroup()
++void Draw(ICanvas& canvas)
+-m_outlineStyle: std:: shared_ptr~IOutlineStyle~
+-m_fillStyle: std:: shared_ptr~IStyle~
+}
+
+CShapeGroup --|> CShapeCollectionImpl
+CShapeCollectionImpl o-- IShape
+CShapeCollectionImpl --|> IShape
+
+IShape <|-- IShapeGroup
+IShapeCollection <|-- IShapeGroup
+
+class IShape {
+<<interface>>
++optional~RectD~ GetFrame() const
++void SetFrame(RectD const& rect)
++shared_ptr~IOutlineStyle~ GetOutlineStyle()
++shared_ptr~IStyle~ GetFillStyle()
++shared_ptr~IShapeGroup~ GetGroup()
+    }
+
+class CShape {
+    }
+IShape <|-- CShape
+
+class CEllipse {
++CEllipse(PointD const& center, double horizontalRadius, double verticalRadius)
+}
+CShape <|-- CEllipse
+
+class CRectangle {
++CRectangle(PointD const& leftTop, double width, double height)
+}
+CShape <|-- CRectangle
+
+class CTriangle {
++CTriangle(PointD const& vertex1, PointD const& vertex2, PointD const& vertex3)
+}
+CShape <|-- CTriangle
+
+class IOutlineStyle {
+<<interface>>
++optional~double~ GetThickness() const
++void SetThickness(double thickness)
+}
+
+class IStyle {
+<<interface>>
++optional~bool~ IsEnabled() const
++void Enable()
++void Disable()
++optional~RgbaColor~ GetColor() const
++void SetColor(RgbaColor color)
+}
+
+class CSlide {
++CSlide(double width, double height)
++double GetWidth() const
++double GetHeight() const
++IShapeCollection& GetShapes() const
++void Draw(ICanvas& canvas) const
+    }
+ISlide <|-- CSlide
+CSlide o-- IShapeCollection

@@ -1,0 +1,39 @@
+add_executable(Editor
+               main.cpp
+               Editor/IDocument.h
+               DocumentItem/IImage.h
+               DocumentItem/IParagraph.h
+               DocumentItem/CDocumentItem.cpp
+               DocumentItem/CDocumentItem.h
+               DocumentItem/CConstDocumentItem.cpp
+               DocumentItem/CConstDocumentItem.h
+               Command/ICommand.h
+               Command/AbstractCommand/CAbstractCommand.cpp
+               Command/AbstractCommand/CAbstractCommand.h
+               Document/CDocument.cpp
+               Document/CDocument.h
+               Image/CImage.cpp
+               Image/CImage.h
+               Paragraph/CParagraph.cpp
+               Paragraph/CParagraph.h
+               Command/SetParagraphTextCommand/CSetParagraphTextCommand.cpp
+               Command/SetParagraphTextCommand/CSetParagraphTextCommand.h
+               Command/ChangeDocumentTitleCommand/CChangeDocumentTitleCommand.cpp
+               Command/ChangeDocumentTitleCommand/CChangeDocumentTitleCommand.h
+               Command/ResizeImageCommand/CResizeImageCommand.cpp
+               Command/ResizeImageCommand/CResizeImageCommand.h
+               History/CHistory.cpp
+               History/CHistory.h
+               Editor/CEditor.cpp
+               Editor/CEditor.h
+               Command/InsertDocumentItemCommand/CInsertDocumentItemCommand.cpp
+               Command/InsertDocumentItemCommand/CInsertDocumentItemCommand.h
+               Document/ISaver.h
+               Saver/CHtmlSaver.cpp
+               Saver/CHtmlSaver.h
+               Command/DeleteItemCommand/CDeleteItemCommand.cpp
+               Command/DeleteItemCommand/CDeleteItemCommand.h
+               Document/IHistory.h
+               Document/ICommandExecutor.h)
+
+add_subdirectory(tests)

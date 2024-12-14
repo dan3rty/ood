@@ -1,0 +1,202 @@
+---
+title: CoffeeShop
+---
+classDiagram
+    class CCoffeeShop{
+        +Start() void
+        -m_beverage : std::unique_ptr~IBeverage~
+        -SelectBeverage() bool
+        -SelectCappuccino() bool
+        -SelectLatte() bool
+        -SelectMilkshake() bool
+        -SelectTea() bool
+        -SelectCondiment() bool
+        -AddChocolateCrumbs() bool
+        -AddChocolateSlices() bool
+        -AddCoconutFlakes() bool
+        -AddIceCubes() bool
+        -AddLemon() bool
+        -AddLiqueur() bool
+        -AddSyrup() bool
+    }
+    class IBeverage{
+        <<interface>>
+        +GetDescription()* std::string
+        +GetCost()* double
+        +~IBeverage()*
+    }
+    class CBeverage{
+        +CBeverage(std::string const& description)
+        +GetDescription() std::string
+        -m_description : std::string
+    }
+    class CCoffee{
+        +CCoffee(std::string const& description = "Coffee")
+        +GetCost() double
+    }
+    class CoffeePortion{
+        <<enumeration>>
+        Standard
+        Double
+    }
+    class CPortionedCoffee{
+        +CPortionedCoffee(std::string const& description, CoffeePortion portion)
+        +GetDescription() std::string
+        #GetPortion() CoffeePortion
+        -GetPortionDescription() std::string
+        -m_portion : CoffeePortion
+    }
+    class CCappuccino{
+        +CCappuccino(CoffeePortion portion = CoffeePortion::Standard)
+        +GetCost() double
+    }
+    class CLatte{
+        +CLatte(CoffeePortion portion = CoffeePortion::Standard)
+        +GetCost() double
+    }
+    class MilkshakePortion{
+        <<enumeration>>
+        Small
+        Standard
+        Grand
+    }
+    class CMilkShake{
+        +CMilkshake(MilkshakePortion portion = MilkshakePortion::Standard)
+        +GetDescription() std::string
+        +GetCost() double
+        -GetPortionDescription() std::string
+        -m_portion : MilkshakePortion
+    }
+    class TeaType{
+        <<enumeration>>
+        Black
+        Green
+        Oolong
+        Karkade
+    }
+    class CTea{
+        +CTea(TeaType type = TeaType::Black)
+        +GetDescription() std::string
+        +GetCost() double
+        -GetTypeDescription() std::string
+        -m_type : TeaType
+    }
+    class CCondimentDecorator{
+        +GetDescription() std::string
+        +GetCost() double
+        +GetCondimentDescription()* std::string
+        +GetCondimentCost()* double
+        #CCondimentDecorator(std::unique_ptr~IBeverage~&& beverage)
+        -m_beverage : std::unique_ptr~IBeverage~
+    }
+    class CChocolateCrumbs{
+        +CChocolateCrumbs(std::unique_ptr~IBeverage~&& beverage, unsigned mass)
+        #GetCondimentDescription() std::string
+        #GetCondimentCost() double
+        -m_mass : unsigned
+    }
+    class CChocolateSlices{
+        +CChocolateSlices(std::unique_ptr~IBeverage~&& beverage, unsigned quantity)
+        #GetCondimentDescription() std::string
+        #GetCondimentCost() double
+        -m_quantity : unsigned
+    }
+    class CCinnamon{
+        +CCinnamon(std::unique_ptr~IBeverage~&& beverage)
+        #GetCondimentDescription() std::string
+        #GetCondimentCost() double
+    }
+    class CCoconutFlakes{
+        +CCoconutFlakes(std::unique_ptr~IBeverage~&& beverage, unsigned mass)
+        #GetCondimentDescription() std::string
+        #GetCondimentCost() double
+        -m_mass : unsigned
+    }
+    class CCream{
+        +CCream(std::unique_ptr~IBeverage~&& beverage)
+        #GetCondimentDescription() std::string
+        #GetCondimentCost() double
+    }
+    class IceCubeType{
+        <<enumeration>>
+        Dry
+        Water
+    }
+    class CIceCubes{
+        +CIceCubes(std::unique_ptr~IBeverage~&& beverage, unsigned quantity, IceCubeType type = IceCubeType::Water)
+        #GetCondimentDescription() std::string
+        #GetCondimentCost() double
+        -m_quantity : unsigned
+        -m_type : IceCubeType
+    }
+    class CLemon{
+        +CLemon(std::unique_ptr~IBeverage~&& beverage, unsigned quantity = 1)
+        #GetCondimentDescription() std::string
+        #GetCondimentCost() double
+        -m_quantity : unsigned
+    }
+    class LiqueurType{
+        <<enumeration>>
+        Nut
+        Chocolate
+    }
+    class CLiqueur{
+        +CLiqueur(std::unique_ptr~IBeverage~&& beverage, unsigned quantity, LiqueurType type = LiqueurType::Nut)
+        #GetCondimentDescription() std::string
+        #GetCondimentCost() double
+        -GetTypeDescription() std::string
+        -m_quantity : unsigned
+        -m_type : LiqueurType
+    }
+    class SyrupType{
+        <<enumeration>>
+        Chocolate
+        Maple
+    }
+    class CSyrup{
+        +CSyrup(std::unique_ptr~IBeverage~&& beverage, unsigned quantity, SyrupType type = SyrupType::Chocolate)
+        #GetCondimentDescription() std::string
+        #GetCondimentCost() double
+        -m_syrupType : SyrupType
+    }
+    CCoffeeShop ..> IBeverage
+    CCoffeeShop ..> CCappuccino
+    CCoffeeShop ..> CLatte
+    CCoffeeShop ..> CMilkShake
+    CCoffeeShop ..> CTea
+    CCoffeeShop ..> CChocolateCrumbs
+    CCoffeeShop ..> CChocolateSlices
+    CCoffeeShop ..> CCinnamon
+    CCoffeeShop ..> CCoconutFlakes
+    CCoffeeShop ..> CCream
+    CCoffeeShop ..> CIceCubes
+    CCoffeeShop ..> CLemon
+    CCoffeeShop ..> CLiqueur
+    CCoffeeShop ..> CSyrup
+    CPortionedCoffee ..> CoffeePortion
+    CCappuccino ..> CoffeePortion
+    CLatte ..> CoffeePortion
+    CTea ..> TeaType
+    CIceCubes ..> IceCubeType
+    CMilkShake ..> MilkshakePortion
+    CLiqueur ..> LiqueurType
+    CSyrup ..> SyrupType
+    CPortionedCoffee ..> CoffeePortion
+    CBeverage ..|> IBeverage
+    CCoffee ..|> CBeverage
+    CPortionedCoffee ..|> CCoffee
+    CMilkShake ..|> CBeverage
+    CTea ..|> CBeverage
+    CCappuccino ..|> CPortionedCoffee
+    CLatte ..|> CPortionedCoffee
+    CCondimentDecorator ..|> IBeverage
+    CChocolateCrumbs ..|> CCondimentDecorator
+    CChocolateSlices ..|> CCondimentDecorator
+    CCinnamon ..|> CCondimentDecorator
+    CCoconutFlakes ..|> CCondimentDecorator
+    CCream ..|> CCondimentDecorator
+    CIceCubes ..|> CCondimentDecorator
+    CLemon ..|> CCondimentDecorator
+    CLiqueur ..|> CCondimentDecorator
+    CSyrup ..|> CCondimentDecorator
+    IBeverage --* CCondimentDecorator

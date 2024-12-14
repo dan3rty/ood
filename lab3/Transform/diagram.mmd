@@ -1,0 +1,127 @@
+---
+title: Transform
+---
+classDiagram
+    class Args{
+        +inputFilename : std::string
+        +outputFilename : std::string
+        +encryptionKeys : std::vector<int>
+        +decryptionKeys : std::vector<int>
+        +compress: bool
+        +decompress : bool
+    }
+    class CTransformer{
+        +CTransformer(Args const& args)
+        +Tranfsorm() void
+        -AddDecorators(Args const& args)
+        -m_input : std::unique_ptr~IInputDataStream~
+        -m_output : std::unique_ptr~IOutputDataStream~
+    }
+    class IInputDataStream{
+        <<interface>>
+        +IsEOF()* bool
+        +ReadByte()* std::uint8_t
+        +ReadBlock()* std::streamsize
+        ~IInputDataStream()*
+    }
+    class IOutputDataStream{
+        <<interface>>
+        +WriteByte()* std::uint8_t
+        +WriteBlock()* std::streamsize
+        ~IOutputDataStream()*
+    }
+    class CArgumentParser{
+        +CArgumentParser(int argc, char const** argv)
+        +Parse() Args
+        -StringViewToInt(std::string_view const& view) int
+        - m_args : std::vector<std::string_view>
+    }
+    class CFileInputStream{
+        +CFileInputStream(std::string const& filename)
+        +IsEOF() bool
+        +ReadByte() uint8_t
+        +ReadBlock(void* dstBuffer, std::streamsize size) std::streamsize
+        -m_file : mutable std::ifstream
+    }
+    class Block{
+        +byte : std::uint8_t
+        +size : std::uint8_t
+    }
+    class CDecompressingInputStream{
+        +CDecompressingInputStream(std::unique_ptr~IInputDataStream~&& stream)
+        +ReadByte() uint8_t
+        +ReadBlock(void* dstBuffer, std::streamsize size) std::streamsize
+        -m_current_block : Block
+    }
+    class CDecryptingInputStream{
+        +CDecryptingInputStream(std::unique_ptr~IInputDataStream~&& stream, int key)
+        +ReadByte() uint8_t
+        +ReadBlock(void* dstBuffer, std::streamsize size)
+        -DecryptByte(uint8_t byte) uint8_t
+        -m_decryptionTable : std::vector<uint8_t>
+    }
+    class CFileOutputStream{
+        +CFileOutputStream(std::string const& filename)
+        +WriteByte(uint8_t data) void
+        +WriteBlock(const void* srcData, std::streamsize size)
+        -m_file : std::ofstream
+    }
+    class CEncryptingOutputStream{
+        +CEncryptingOutputStream(std::unique_ptr~IOutputDataStream~&& stream, int key)
+        +WriteByte(uint8_t data) void
+        +WriteBlock(const void* srcData, std::streamsize size)
+        -EncryptByte(uint8_t byte) uint8_t
+        -m_encryptionTable : std::vector<uint8_t>
+    }
+    class CCompressingOutputStream{
+        +CCompressingOutputStream(std::unique_ptr~IOutputDataStream~&& stream)
+        +WriteByte(std::uint8_t data) void
+        +WriteBlock(const void* srcData, std::streamsize size) void
+        -Flush() void
+        -m_stream : std::unique_ptr~IOutputDataStream~
+        -m_current_block : Block
+    }
+    class CMemoryOutputStream {
+        +CMemoryOutputStream(std::vector~std::uint8_t~& data)
+        +WriteByte(std::uint8_t data) void
+        +WriteBlock(const void* srcData, std::streamsize size) void
+        -m_data : std::vector~std::uint8_t~&
+    }
+    class CMemoryInputStream {
+        +CMemoryInputStream(std::vector~std::uint8_t~& data)
+        +IsEOF() bool
+        +ReadByte() uint8_t
+        +ReadBlock(void* dstBuffer, std::streamsize size) std::streamsize
+        -m_data : std::vector~std::uint8_t~&
+        -m_currentPosition : size_t
+    }
+    class CEncryptionTableBuilder {
+        +BuildEncryptionTable(int key) Table
+        +BuildDecryptionTable(int key) Table
+    }
+    class CInputDataStreamDecorator {
+        +IsEOF() bool
+        #CInputDataStreamDecorator(IInputDataStreamPtr&& stream)
+        #m_stream : IInputDataStreamPtr
+    }
+    CTransformer ..> Args
+    CTransformer ..> CArgumentParser
+    CArgumentParser ..> Args
+    CTransformer *.. IInputDataStream
+    CTransformer *.. IOutputDataStream
+    CTransformer ..> CDecompressingInputStream
+    CTransformer ..> CCompressingOutputStream
+    CTransformer ..> CDecryptingInputStream
+    CTransformer ..> CEncryptingOutputStream
+    CFileInputStream ..|> IInputDataStream
+    CMemoryInputStream ..|> IInputDataStream
+    CInputDataStreamDecorator ..|> IInputDataStream
+    CInputDataStreamDecorator *-- IInputDataStream
+    CDecryptingInputStream ..|> CInputDataStreamDecorator
+    CDecryptingInputStream ..> CEncryptionTableBuilder
+    CDecompressingInputStream ..|> CInputDataStreamDecorator
+    CFileOutputStream ..|> IOutputDataStream
+    CMemoryOutputStream ..|> IOutputDataStream
+    CEncryptingOutputStream ..|> IOutputDataStream
+    CEncryptingOutputStream ..> CEncryptionTableBuilder
+    CCompressingOutputStream ..|> IOutputDataStream

@@ -1,0 +1,11 @@
+add_executable(WeatherStationProLite
+        Observer/IObserver.h
+        Observer/IObservable.h
+        Observer/CObservable.hpp
+        WeatherDataProLite/CWeatherDataProLite.h
+        WeatherDataProLite/CWeatherDataProLite.cpp
+        Displays/CurrentConditionsDisplay/CCurrentConditionsDisplay.h
+        Displays/CurrentConditionsDisplay/CCurrentConditionsDisplay.cpp
+        Displays/FishermanDisplay/CFishermanDisplay.h
+        Displays/FishermanDisplay/CFishermanDisplay.cpp
+        main.cpp)
